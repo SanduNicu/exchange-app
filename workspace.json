@@ -1,0 +1,127 @@
+{
+  "version": 2,
+  "projects": {
+    "exchange-app": {
+      "root": "apps/exchange-app",
+      "sourceRoot": "apps/exchange-app/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/web:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/exchange-app",
+            "index": "apps/exchange-app/src/index.html",
+            "main": "apps/exchange-app/src/main.tsx",
+            "polyfills": "apps/exchange-app/src/polyfills.ts",
+            "tsConfig": "apps/exchange-app/tsconfig.app.json",
+            "assets": [
+              "apps/exchange-app/src/favicon.ico",
+              "apps/exchange-app/src/assets"
+            ],
+            "styles": ["apps/exchange-app/src/styles.scss"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/exchange-app/src/environments/environment.ts",
+                  "with": "apps/exchange-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "exchange-app:build",
+            "hmr": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "exchange-app:build:production",
+              "hmr": false
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/exchange-app/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/exchange-app"],
+          "options": {
+            "jestConfig": "apps/exchange-app/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "exchange-app-e2e": {
+      "root": "apps/exchange-app-e2e",
+      "sourceRoot": "apps/exchange-app-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/exchange-app-e2e/cypress.json",
+            "tsConfig": "apps/exchange-app-e2e/tsconfig.e2e.json",
+            "devServerTarget": "exchange-app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "exchange-app:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/exchange-app-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/react"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "exchange-app"
+}
