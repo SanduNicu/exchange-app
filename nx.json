@@ -27,6 +27,12 @@
     ]
   },
   "projects": {
+    "exchange": {
+      "tags": []
+    },
+    "exchange-api": {
+      "tags": []
+    },
     "exchange-app": {
       "tags": []
     },

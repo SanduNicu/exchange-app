@@ -1,0 +1,10 @@
+.wrapper {
+  margin: 50px 0;
+  .inputs {
+    display: flex;
+    > div {
+      width: 100px;
+      margin-right: 20px;
+    }
+  }
+}
