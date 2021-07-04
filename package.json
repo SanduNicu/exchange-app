@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
-    "start": "nx serve",
+    "start": "nx run-many --parallel --target=serve --projects=exchange-app,exchange-api",
     "build": "nx build",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
