@@ -2,7 +2,7 @@
 
 import styles from './app.module.scss';
 import { Header } from './components/header/Header';
-import { Account } from './components/account/Account';
+import { ExchangeInput } from './components/exchangeInput/ExchangeInput';
 import { useExchangeRates } from './hooks/useExchangeRates';
 import { useEffect, useState, useCallback } from 'react';
 import { initialWallet, currencies } from './data';
@@ -98,12 +98,12 @@ export function App() {
   return (
     <div className={styles.app}>
       <Header />
-      <Account
+      <ExchangeInput
         updateInput={updateInput('from')}
         data={fromInput}
         balance={wallet[fromInput.currency]}
       />
-      <Account
+      <ExchangeInput
         updateInput={updateInput('to')}
         data={toInput}
         balance={wallet[toInput.currency]}

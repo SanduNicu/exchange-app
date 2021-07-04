@@ -2,9 +2,9 @@ import { currencies, currencyIDs, currencyKeys } from '../../data';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import * as styles from './account.module.scss';
+import * as styles from './exchangeInput.module.scss';
 
-export function Account(props) {
+export function ExchangeInput(props) {
   const {
     data: { currency, value, computedValue, isUsed },
     balance,
@@ -42,4 +42,4 @@ export function Account(props) {
   );
 }
 
-export default Account;
+export default ExchangeInput;
