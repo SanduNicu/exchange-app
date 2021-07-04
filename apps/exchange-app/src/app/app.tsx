@@ -1,3 +1,5 @@
+/*eslint no-prototype-builtins: 0*/
+
 import styles from './app.module.scss';
 import { Header } from './components/header/Header';
 import { Account } from './components/account/Account';
@@ -5,45 +7,60 @@ import { useExchangeRates } from './hooks/useExchangeRates';
 import { useEffect, useState, useCallback } from 'react';
 import { initialWallet, currencies } from './data';
 
+const exchangeRatesRefreshRate = 5000;
+
 interface Wallet {
   [index: string]: number;
+}
+
+interface Input {
+  currency: string;
+  isUsed: boolean;
+  value: number | string;
+  computedValue: number | string;
 }
 
 const defaultFromInput = {
   currency: 'eur',
   value: '',
-  isUsed: true,
-  computedValue: 0,
+  isUsed: false,
+  computedValue: '',
 };
 
 const defaultToInput = {
   currency: 'usd',
   value: '',
   isUsed: false,
-  computedValue: 0,
+  computedValue: '',
 };
 
 export function App() {
-  const [exchangeRates] = useExchangeRates();
+  const [exchangeRates] = useExchangeRates(exchangeRatesRefreshRate);
   const [wallet, setWallet] = useState<Wallet>(initialWallet);
-  const [fromInput, setFromInput] = useState(defaultFromInput);
-  const [toInput, setToInput] = useState(defaultToInput);
+  const [fromInput, setFromInput] = useState<Input>(defaultFromInput);
+  const [toInput, setToInput] = useState<Input>(defaultToInput);
 
   const fromCurrencyRate = exchangeRates[currencies[fromInput.currency].id];
   const toCurrencyRate = exchangeRates[currencies[toInput.currency].id];
 
   const calcFromInputComputedValue = useCallback(() => {
-    return (toInput.value * toCurrencyRate) / fromCurrencyRate;
+    return (
+      (Number(toInput.value) * toCurrencyRate) /
+      fromCurrencyRate
+    ).toFixed(2);
   }, [fromCurrencyRate, toCurrencyRate, toInput.value]);
 
   const calcToInputComputedValue = useCallback(() => {
-    return (fromInput.value * fromCurrencyRate) / toCurrencyRate;
+    return (
+      (Number(fromInput.value) * fromCurrencyRate) /
+      toCurrencyRate
+    ).toFixed(2);
   }, [fromCurrencyRate, toCurrencyRate, fromInput.value]);
 
   useEffect(() => {
     if (fromInput.isUsed) {
       setToInput({ ...toInput, computedValue: calcToInputComputedValue() });
-    } else {
+    } else if (toInput.isUsed) {
       setFromInput({
         ...fromInput,
         computedValue: calcFromInputComputedValue(),
