@@ -67,11 +67,23 @@ export function App() {
     (inputType) => (ownValues, otherValues) => {
       if (ownValues.hasOwnProperty('currency')) {
         if (inputType === 'from') {
+          setToInput({
+            ...defaultToInput,
+            currency:
+              ownValues.currency === toInput.currency
+                ? fromInput.currency
+                : toInput.currency,
+          });
           setFromInput({ ...defaultFromInput, currency: ownValues.currency });
-          setToInput(defaultToInput);
         } else {
-          setToInput({ ...defaultFromInput, currency: ownValues.currency });
-          setFromInput(defaultToInput);
+          setFromInput({
+            ...defaultFromInput,
+            currency:
+              ownValues.currency === fromInput.currency
+                ? toInput.currency
+                : fromInput.currency,
+          });
+          setToInput({ ...defaultToInput, currency: ownValues.currency });
         }
         return;
       }
