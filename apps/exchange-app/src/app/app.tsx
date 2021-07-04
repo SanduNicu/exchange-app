@@ -2,7 +2,8 @@
 
 import styles from './app.module.scss';
 import { Header } from './components/header/Header';
-import { ExchangeInput } from './components/exchangeInput/ExchangeInput';
+import { ExchangeInput } from './components/exchangeInput/exchangeInput';
+import { ExchangeButton } from './components/exchangeButton/exchangeButton';
 import { useExchangeRates } from './hooks/useExchangeRates';
 import { useEffect, useState, useCallback } from 'react';
 import { initialWallet, currencies } from './data';
@@ -44,17 +45,11 @@ export function App() {
   const toCurrencyRate = exchangeRates[currencies[toInput.currency].id];
 
   const calcFromInputComputedValue = useCallback(() => {
-    return (
-      (Number(toInput.value) * toCurrencyRate) /
-      fromCurrencyRate
-    ).toFixed(2);
+    return +((+toInput.value * toCurrencyRate) / fromCurrencyRate).toFixed(2);
   }, [fromCurrencyRate, toCurrencyRate, toInput.value]);
 
   const calcToInputComputedValue = useCallback(() => {
-    return (
-      (Number(fromInput.value) * fromCurrencyRate) /
-      toCurrencyRate
-    ).toFixed(2);
+    return +((+fromInput.value * fromCurrencyRate) / toCurrencyRate).toFixed(2);
   }, [fromCurrencyRate, toCurrencyRate, fromInput.value]);
 
   useEffect(() => {
@@ -71,8 +66,13 @@ export function App() {
   const updateInput = useCallback(
     (inputType) => (ownValues, otherValues) => {
       if (ownValues.hasOwnProperty('currency')) {
-        setFromInput(defaultFromInput);
-        setToInput(defaultToInput);
+        if (inputType === 'from') {
+          setFromInput({ ...defaultFromInput, currency: ownValues.currency });
+          setToInput(defaultToInput);
+        } else {
+          setToInput({ ...defaultFromInput, currency: ownValues.currency });
+          setFromInput(defaultToInput);
+        }
         return;
       }
 
@@ -95,18 +95,50 @@ export function App() {
     [fromInput, toInput, calcFromInputComputedValue, calcToInputComputedValue]
   );
 
+  const exchangeCurrencies = useCallback(() => {
+    const currencyToAdd = currencies[toInput.currency].key;
+    const currencyToRemove = currencies[fromInput.currency].key;
+
+    const valueToAdd = toInput.isUsed ? toInput.value : toInput.computedValue;
+    const valueToRemove = fromInput.isUsed
+      ? fromInput.value
+      : fromInput.computedValue;
+
+    const newWallet = {
+      ...wallet,
+      [currencyToAdd]: +(+wallet[currencyToAdd] + +valueToAdd).toFixed(2),
+      [currencyToRemove]: +(+wallet[currencyToRemove] - +valueToRemove).toFixed(
+        2
+      ),
+    };
+
+    setWallet(newWallet);
+  }, [toInput, fromInput, wallet]);
+
+  const exchangeBtnDisabled = fromInput.isUsed
+    ? +fromInput.value > +wallet[currencies[fromInput.currency].key]
+    : +fromInput.computedValue > +wallet[currencies[fromInput.currency].key];
+
   return (
     <div className={styles.app}>
-      <Header />
+      <Header sellCurrency={fromInput.currency} />
       <ExchangeInput
         updateInput={updateInput('from')}
         data={fromInput}
         balance={wallet[fromInput.currency]}
+        sign="-"
       />
       <ExchangeInput
         updateInput={updateInput('to')}
         data={toInput}
         balance={wallet[toInput.currency]}
+        sign="+"
+      />
+      <ExchangeButton
+        onClick={exchangeCurrencies}
+        disabled={exchangeBtnDisabled}
+        sellCurrency={fromInput.currency}
+        buyCurrency={toInput.currency}
       />
     </div>
   );

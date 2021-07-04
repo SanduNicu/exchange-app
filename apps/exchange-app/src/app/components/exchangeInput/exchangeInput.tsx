@@ -9,6 +9,7 @@ export function ExchangeInput(props) {
     data: { currency, value, computedValue, isUsed },
     balance,
     updateInput,
+    sign,
   } = props;
   const inputValue = isUsed ? value : computedValue;
 
@@ -26,8 +27,10 @@ export function ExchangeInput(props) {
             </MenuItem>
           ))}
         </Select>
+        {inputValue > 0 && <span>{sign}</span>}
         <TextField
           placeholder="0"
+          type="number"
           value={inputValue}
           onChange={(ev) =>
             updateInput(
