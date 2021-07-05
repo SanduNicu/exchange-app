@@ -94,14 +94,12 @@ export function App() {
 
         if (inputType === 'from') {
           setFromInput({ ...fromInput, ...ownValues });
-          setToInput({ ...toInput, ...otherValues });
           const newOtherValues = ownValues.hasOwnProperty('value')
             ? { ...otherValues, value: calcToInputNewValue() }
             : otherValues;
           setToInput({ ...toInput, ...newOtherValues });
         } else {
           setToInput({ ...toInput, ...ownValues });
-          setFromInput({ ...fromInput, ...otherValues });
           const newOtherValues = ownValues.hasOwnProperty('value')
             ? { ...otherValues, value: calcFromInputNewValue() }
             : otherValues;

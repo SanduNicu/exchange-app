@@ -44,7 +44,7 @@ export function ExchangeInput(props: ExchangeInputProps) {
           value={value}
           onChange={(ev) =>
             updateInput(
-              { value: ev.target.value, isUsed: true },
+              { value: +(+ev.target.value).toFixed(2), isUsed: true },
               { isUsed: false }
             )
           }
