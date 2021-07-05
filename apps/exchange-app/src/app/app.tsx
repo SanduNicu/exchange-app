@@ -1,39 +1,23 @@
-/*eslint no-prototype-builtins: 0*/
-
 import styles from './app.module.scss';
 import { Header } from './components/header/Header';
 import { ExchangeInput } from './components/exchangeInput/exchangeInput';
 import { ExchangeButton } from './components/exchangeButton/exchangeButton';
 import { useExchangeRates } from './hooks/useExchangeRates';
-import { useEffect, useState, useCallback } from 'react';
-import { initialWallet, currencies } from './data';
+import { useState, useCallback } from 'react';
+import {
+  initialWallet,
+  currencies,
+  InputType,
+  defaultFromInput,
+  defaultToInput,
+} from './data';
+import { Input, Wallet } from './types';
 
 const exchangeRatesRefreshRate = 3000;
 
-interface Wallet {
-  [index: string]: number;
-}
-
-export interface Input {
-  currency: string;
-  isUsed: boolean;
-  value: number | string;
-}
-
-const defaultFromInput = {
-  currency: 'eur',
-  value: '',
-  isUsed: false,
-};
-
-const defaultToInput = {
-  currency: 'usd',
-  value: '',
-  isUsed: false,
-};
-
 export function App() {
   const [exchangeRates] = useExchangeRates(exchangeRatesRefreshRate);
+
   const [wallet, setWallet] = useState<Wallet>(initialWallet);
   const [fromInput, setFromInput] = useState<Input>(defaultFromInput);
   const [toInput, setToInput] = useState<Input>(defaultToInput);
@@ -41,106 +25,93 @@ export function App() {
   const fromCurrencyRate = exchangeRates[currencies[fromInput.currency].id];
   const toCurrencyRate = exchangeRates[currencies[toInput.currency].id];
 
-  const calcFromInputNewValue = useCallback(() => {
-    return +((+toInput.value * toCurrencyRate) / fromCurrencyRate).toFixed(2);
-  }, [fromCurrencyRate, toCurrencyRate, toInput.value]);
+  const fromInputCalculatedValue =
+    +((+toInput.value * toCurrencyRate) / fromCurrencyRate).toFixed(2) || '';
 
-  const calcToInputNewValue = useCallback(() => {
-    return +((+fromInput.value * fromCurrencyRate) / toCurrencyRate).toFixed(2);
-  }, [fromCurrencyRate, toCurrencyRate, fromInput.value]);
+  const toInputCalculatedValue =
+    +((+fromInput.value * fromCurrencyRate) / toCurrencyRate).toFixed(2) || '';
 
-  useEffect(() => {
-    if (fromInput.isUsed) {
-      setToInput({ ...toInput, value: calcToInputNewValue() });
-    } else if (toInput.isUsed) {
-      setFromInput({
-        ...fromInput,
-        value: calcFromInputNewValue(),
-      });
-    }
-  }, [exchangeRates, calcFromInputNewValue, calcToInputNewValue]);
-
-  const updateInput = useCallback(
-    (inputType) =>
-      (ownValues: Partial<Input>, otherValues: Partial<Input> = {}) => {
-        if (ownValues.hasOwnProperty('currency')) {
-          if (inputType === 'from') {
-            setToInput({
-              ...defaultToInput,
-              currency:
-                ownValues.currency === toInput.currency
-                  ? fromInput.currency
-                  : toInput.currency,
-            });
-            setFromInput({
-              ...defaultFromInput,
-              currency: ownValues.currency ?? '',
-            });
-          } else {
-            setFromInput({
-              ...defaultFromInput,
-              currency:
-                ownValues.currency === fromInput.currency
-                  ? toInput.currency
-                  : fromInput.currency,
-            });
-            setToInput({
-              ...defaultToInput,
-              currency: ownValues.currency ?? '',
-            });
-          }
-          return;
+  const updateInputCurrency = useCallback(
+    (inputType) => (currency: string) => {
+      if (inputType === InputType.from) {
+        if (toInput.currency === currency) {
+          setToInput({ ...toInput, value: '', currency: fromInput.currency });
         }
-
-        if (inputType === 'from') {
-          setFromInput({ ...fromInput, ...ownValues });
-          const newOtherValues = ownValues.hasOwnProperty('value')
-            ? { ...otherValues, value: calcToInputNewValue() }
-            : otherValues;
-          setToInput({ ...toInput, ...newOtherValues });
-        } else {
-          setToInput({ ...toInput, ...ownValues });
-          const newOtherValues = ownValues.hasOwnProperty('value')
-            ? { ...otherValues, value: calcFromInputNewValue() }
-            : otherValues;
-          setFromInput({ ...fromInput, ...newOtherValues });
+        setFromInput({ ...fromInput, value: '', currency });
+      } else {
+        if (fromInput.currency === currency) {
+          setFromInput({ ...fromInput, value: '', currency: toInput.currency });
         }
-      },
-    [fromInput, toInput, calcFromInputNewValue, calcToInputNewValue]
+        setToInput({ ...toInput, value: '', currency });
+      }
+    },
+    [fromInput, toInput]
+  );
+
+  const updateInputValue = useCallback(
+    (inputType) => (value: number | string) => {
+      if (value === 0) value = '';
+
+      if (inputType === InputType.from) {
+        setFromInput({ ...fromInput, value, isUsed: true });
+        setToInput({ ...toInput, isUsed: false });
+      } else {
+        setToInput({ ...toInput, value, isUsed: true });
+        setFromInput({ ...fromInput, isUsed: false });
+      }
+    },
+    [fromInput, toInput]
   );
 
   const exchangeCurrencies = useCallback(() => {
-    const currencyToAdd = currencies[toInput.currency].key;
     const currencyToRemove = currencies[fromInput.currency].key;
+    const currencyToAdd = currencies[toInput.currency].key;
+    const valueToRemove = fromInput.isUsed
+      ? fromInput.value
+      : fromInputCalculatedValue;
+
+    const valueToAdd = toInput.isUsed ? toInput.value : toInputCalculatedValue;
 
     const newWallet = {
       ...wallet,
-      [currencyToAdd]: +(+wallet[currencyToAdd] + +toInput.value).toFixed(2),
-      [currencyToRemove]: +(
-        +wallet[currencyToRemove] - +fromInput.value
-      ).toFixed(2),
+      [currencyToAdd]: +(+wallet[currencyToAdd] + +valueToAdd).toFixed(2),
+      [currencyToRemove]: +(+wallet[currencyToRemove] - +valueToRemove).toFixed(
+        2
+      ),
     };
 
     setWallet(newWallet);
-  }, [toInput, fromInput, wallet]);
+  }, [
+    toInput,
+    fromInput,
+    wallet,
+    fromInputCalculatedValue,
+    toInputCalculatedValue,
+  ]);
 
   const exchangeBtnDisabled =
-    +fromInput.value > wallet[currencies[fromInput.currency].key] ||
-    +fromInput.value <= 0;
+    (fromInput.isUsed ? +fromInput.value : fromInputCalculatedValue) >
+    wallet[currencies[fromInput.currency].key];
+
+  if (exchangeRates.length === 0) return null;
 
   return (
     <div className={styles.app}>
       <Header currencyToSell={fromInput.currency} />
       <ExchangeInput
-        updateInput={updateInput('from')}
+        updateInputCurrency={updateInputCurrency(InputType.from)}
+        updateInputValue={updateInputValue(InputType.from)}
         data={fromInput}
         balance={wallet[fromInput.currency]}
+        calculatedValue={fromInputCalculatedValue}
         sign="-"
       />
       <ExchangeInput
-        updateInput={updateInput('to')}
+        updateInputCurrency={updateInputCurrency(InputType.to)}
+        updateInputValue={updateInputValue(InputType.to)}
         data={toInput}
         balance={wallet[toInput.currency]}
+        calculatedValue={toInputCalculatedValue}
         sign="+"
       />
       <ExchangeButton

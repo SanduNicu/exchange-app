@@ -3,30 +3,34 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import styles from './exchangeInput.module.scss';
-import { Input } from '../../app';
+import { Input } from '../../types';
 
 interface ExchangeInputProps {
-  updateInput(ownVals: Partial<Input>, vals?: Partial<Input>): void;
+  updateInputCurrency(currency: string): void;
+  updateInputValue(value: number): void;
   data: Input;
+  calculatedValue: number | '';
   balance: number;
   sign: '+' | '-';
 }
 export function ExchangeInput(props: ExchangeInputProps) {
   const {
-    data: { currency, value },
+    data: { currency, value, isUsed },
     balance,
-    updateInput,
+    calculatedValue,
+    updateInputCurrency,
+    updateInputValue,
     sign,
   } = props;
+
+  const inputValue = isUsed ? value : calculatedValue;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.inputs}>
         <Select
           className={styles.select}
-          onChange={(ev) =>
-            updateInput({ currency: ev.target.value as string })
-          }
+          onChange={(ev) => updateInputCurrency(ev.target.value as string)}
           value={currency}
           inputProps={{ 'aria-label': 'Without label' }}
         >
@@ -36,18 +40,13 @@ export function ExchangeInput(props: ExchangeInputProps) {
             </MenuItem>
           ))}
         </Select>
-        {value > 0 && <span>{sign}</span>}
+        {inputValue > 0 && <span>{sign}</span>}
         <TextField
           placeholder="0"
           className={styles.textField}
           type="number"
-          value={value}
-          onChange={(ev) =>
-            updateInput(
-              { value: +(+ev.target.value).toFixed(2), isUsed: true },
-              { isUsed: false }
-            )
-          }
+          value={inputValue}
+          onChange={(ev) => updateInputValue(+(+ev.target.value).toFixed(2))}
         />
       </div>
       <span>Balance: {balance}</span>

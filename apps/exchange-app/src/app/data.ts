@@ -1,28 +1,42 @@
-export enum currencyKeys {
+import { Currency } from "./types";
+
+export enum CurrencyKeys {
   eur = 'eur',
   usd = 'usd',
   gbp = 'gbp',
 }
 
-
-interface Currency {
-  [index: string]: any;
+export enum InputType {
+  from = 'from',
+  to = 'to',
 }
 
+export const defaultFromInput = {
+  currency: 'eur',
+  value: '',
+  isUsed: false,
+};
+
+export const defaultToInput = {
+  currency: 'usd',
+  value: '',
+  isUsed: false,
+};
+
 export const currencies = {
-  [currencyKeys.eur]: { 
+  [CurrencyKeys.eur]: { 
     id: 'EUR', 
-    key: currencyKeys.eur, 
+    key: CurrencyKeys.eur, 
     name: 'euro' 
   },
-  [currencyKeys.usd]: {
+  [CurrencyKeys.usd]: {
     id: 'USD',
-    key: currencyKeys.usd,
+    key: CurrencyKeys.usd,
     name: 'american dollar',
   },
-  [currencyKeys.gbp]: {
+  [CurrencyKeys.gbp]: {
     id: 'GBP',
-    key: currencyKeys.gbp,
+    key: CurrencyKeys.gbp,
     name: 'british pound sterling',
   },
 } as Currency;
@@ -31,7 +45,7 @@ export const currencies = {
 export const currencyIDs = Object.values(currencies).map((curr) => curr.id);
 
 export const initialWallet = {
-  [currencyKeys.eur]: 1000,
-  [currencyKeys.usd]: 1000,
-  [currencyKeys.gbp]: 1000,
+  [CurrencyKeys.eur]: 1000,
+  [CurrencyKeys.usd]: 1000,
+  [CurrencyKeys.gbp]: 1000,
 };
