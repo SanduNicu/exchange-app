@@ -1,23 +1,32 @@
-import { currencies, currencyIDs, currencyKeys } from '../../data';
+import { currencies } from '../../data';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import * as styles from './exchangeInput.module.scss';
+import styles from './exchangeInput.module.scss';
+import { Input } from '../../app';
 
-export function ExchangeInput(props) {
+interface ExchangeInputProps {
+  updateInput(ownVals: Partial<Input>, vals?: Partial<Input>): void;
+  data: Input;
+  balance: number;
+  sign: '+' | '-';
+}
+export function ExchangeInput(props: ExchangeInputProps) {
   const {
-    data: { currency, value, computedValue, isUsed },
+    data: { currency, value },
     balance,
     updateInput,
     sign,
   } = props;
-  const inputValue = isUsed ? value : computedValue;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.inputs}>
         <Select
-          onChange={(ev) => updateInput({ currency: ev.target.value })}
+          className={styles.select}
+          onChange={(ev) =>
+            updateInput({ currency: ev.target.value as string })
+          }
           value={currency}
           inputProps={{ 'aria-label': 'Without label' }}
         >
@@ -27,11 +36,12 @@ export function ExchangeInput(props) {
             </MenuItem>
           ))}
         </Select>
-        {inputValue > 0 && <span>{sign}</span>}
+        {value > 0 && <span>{sign}</span>}
         <TextField
           placeholder="0"
+          className={styles.textField}
           type="number"
-          value={inputValue}
+          value={value}
           onChange={(ev) =>
             updateInput(
               { value: ev.target.value, isUsed: true },

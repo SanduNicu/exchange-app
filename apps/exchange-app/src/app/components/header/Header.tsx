@@ -1,8 +1,12 @@
 import { currencies } from '../../data';
 
-export function Header(props) {
-  const { sellCurrency } = props;
-  return <div>{`Sell ${currencies[sellCurrency].id}`}</div>;
+interface HeaderProps {
+  currencyToSell: string;
+}
+
+export function Header(props: HeaderProps) {
+  const { currencyToSell } = props;
+  return <div>{`Sell ${currencies[currencyToSell].id}`}</div>;
 }
 
 export default Header;

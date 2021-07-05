@@ -3,12 +3,11 @@
   .inputs {
     display: flex;
     align-items: center;
-    > span {
-      margin-right: 5px;
-    }
-    > div {
-      width: 100px;
-      margin-right: 20px;
-    }
+  }
+  .select {
+    margin-right: 20px;
+  };
+  .textField {
+    margin-left: 10px;
   }
 }

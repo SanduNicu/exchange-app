@@ -6,7 +6,7 @@ const fetchExchange = async () => {
   }).then(res => res.json());
 };
 
-export function useExchangeRates(refreshRate) {
+export function useExchangeRates(refreshRate: number) {
   const [exchangeRates, setExchangeRates] = useState([]);
   const updateRates = async () => {
     const rates = await fetchExchange();
@@ -21,7 +21,7 @@ export function useExchangeRates(refreshRate) {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [refreshRate]);
 
   return [exchangeRates];
 }

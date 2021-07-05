@@ -1,9 +1,16 @@
 import Button from '@material-ui/core/Button';
 import { currencies } from '../../data';
 
-export function ExchangeButton(props) {
-  const { onClick, disabled, sellCurrency, buyCurrency } = props;
-  const label = `Sell ${currencies[sellCurrency].id} for ${currencies[buyCurrency].id}`;
+interface ExchangeButtonProps {
+  onClick(): void;
+  disabled: boolean;
+  currencyToBuy: string;
+  currencyToSell: string;
+}
+
+export function ExchangeButton(props: ExchangeButtonProps) {
+  const { onClick, disabled, currencyToSell, currencyToBuy } = props;
+  const label = `Sell ${currencies[currencyToSell].id} for ${currencies[currencyToBuy].id}`;
   return (
     <Button
       variant="contained"
