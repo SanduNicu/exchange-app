@@ -12,6 +12,8 @@ interface ExchangeInputProps {
   calculatedValue: number | '';
   balance: number;
   sign: '+' | '-';
+  selectDataTestId: string;
+  inputDataTestId: string;
 }
 export function ExchangeInput(props: ExchangeInputProps) {
   const {
@@ -20,6 +22,8 @@ export function ExchangeInput(props: ExchangeInputProps) {
     calculatedValue,
     updateInputCurrency,
     updateInputValue,
+    selectDataTestId,
+    inputDataTestId,
     sign,
   } = props;
 
@@ -33,15 +37,21 @@ export function ExchangeInput(props: ExchangeInputProps) {
           onChange={(ev) => updateInputCurrency(ev.target.value as string)}
           value={currency}
           inputProps={{ 'aria-label': 'Without label' }}
+          data-testid={selectDataTestId}
         >
           {Object.values(currencies).map((curr) => (
-            <MenuItem key={curr.key} value={curr.key}>
+            <MenuItem
+              key={curr.key}
+              data-testid={`currency-${curr.key}`}
+              value={curr.key}
+            >
               {curr.id}
             </MenuItem>
           ))}
         </Select>
         {inputValue > 0 && <span>{sign}</span>}
         <TextField
+          inputProps={{ 'data-testid': inputDataTestId }}
           placeholder="0"
           className={styles.textField}
           type="number"
