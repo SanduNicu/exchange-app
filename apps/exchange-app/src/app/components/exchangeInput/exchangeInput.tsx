@@ -1,4 +1,4 @@
-import { currencies } from '../../data';
+import { currencies, InputType } from '../../data';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -12,8 +12,7 @@ interface ExchangeInputProps {
   calculatedValue: number | '';
   balance: number;
   sign: '+' | '-';
-  selectDataTestId: string;
-  inputDataTestId: string;
+  inputType: InputType;
 }
 export function ExchangeInput(props: ExchangeInputProps) {
   const {
@@ -22,8 +21,7 @@ export function ExchangeInput(props: ExchangeInputProps) {
     calculatedValue,
     updateInputCurrency,
     updateInputValue,
-    selectDataTestId,
-    inputDataTestId,
+    inputType,
     sign,
   } = props;
 
@@ -36,8 +34,11 @@ export function ExchangeInput(props: ExchangeInputProps) {
           className={styles.select}
           onChange={(ev) => updateInputCurrency(ev.target.value as string)}
           value={currency}
-          inputProps={{ 'aria-label': 'Without label' }}
-          data-testid={selectDataTestId}
+          data-testid={`${inputType}-currency-select`}
+          inputProps={{
+            'aria-label': 'Without label',
+            'data-testid': `${inputType}-currency-select-input`,
+          }}
         >
           {Object.values(currencies).map((curr) => (
             <MenuItem
@@ -51,7 +52,7 @@ export function ExchangeInput(props: ExchangeInputProps) {
         </Select>
         {inputValue > 0 && <span>{sign}</span>}
         <TextField
-          inputProps={{ 'data-testid': inputDataTestId }}
+          inputProps={{ 'data-testid': `${inputType}-currency-input` }}
           placeholder="0"
           className={styles.textField}
           type="number"
@@ -59,7 +60,7 @@ export function ExchangeInput(props: ExchangeInputProps) {
           onChange={(ev) => updateInputValue(+(+ev.target.value).toFixed(2))}
         />
       </div>
-      <span>Balance: {balance}</span>
+      <span data-testid={`${inputType}-balance`}>Balance: {balance}</span>
     </div>
   );
 }

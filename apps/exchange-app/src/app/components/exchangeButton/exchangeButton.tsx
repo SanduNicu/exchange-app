@@ -13,6 +13,7 @@ export function ExchangeButton(props: ExchangeButtonProps) {
   const label = `Sell ${currencies[currencyToSell].id} for ${currencies[currencyToBuy].id}`;
   return (
     <Button
+      data-testid="exchange-btn"
       variant="contained"
       color="primary"
       onClick={onClick}

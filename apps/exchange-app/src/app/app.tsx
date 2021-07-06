@@ -105,8 +105,7 @@ export function App() {
         balance={wallet[fromInput.currency]}
         calculatedValue={fromInputCalculatedValue}
         sign="-"
-        selectDataTestId="from-currency-select"
-        inputDataTestId="from-currency-input"
+        inputType={InputType.from}
       />
       <ExchangeInput
         updateInputCurrency={updateInputCurrency(InputType.to)}
@@ -115,8 +114,7 @@ export function App() {
         balance={wallet[toInput.currency]}
         calculatedValue={toInputCalculatedValue}
         sign="+"
-        selectDataTestId="to-currency-select"
-        inputDataTestId="to-currency-input"
+        inputType={InputType.to}
       />
       <ExchangeButton
         onClick={exchangeCurrencies}

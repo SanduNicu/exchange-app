@@ -9,8 +9,12 @@ const fetchExchange = async () => {
 export function useExchangeRates(refreshRate: number) {
   const [exchangeRates, setExchangeRates] = useState([]);
   const updateRates = async () => {
-    const rates = await fetchExchange();
-    setExchangeRates(rates);
+    try {
+      const rates = await fetchExchange();
+      setExchangeRates(rates);
+    } catch (e) {
+      setExchangeRates([]);
+    }
   };
   useEffect(() => {
     updateRates();
