@@ -1,5 +1,5 @@
 .wrapper {
-  margin: 50px 0;
+  margin: 20px 0;
   .inputs {
     display: flex;
     align-items: center;
@@ -9,5 +9,10 @@
   };
   .textField {
     margin-left: 10px;
+  }
+  .balance {
+    padding: 10px 0;
+    font-size: 12px;
+    color: #888888;
   }
 }

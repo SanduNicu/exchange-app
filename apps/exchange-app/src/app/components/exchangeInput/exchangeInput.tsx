@@ -60,7 +60,9 @@ export function ExchangeInput(props: ExchangeInputProps) {
           onChange={(ev) => updateInputValue(+(+ev.target.value).toFixed(2))}
         />
       </div>
-      <span data-testid={`${inputType}-balance`}>Balance: {balance}</span>
+      <div className={styles.balance} data-testid={`${inputType}-balance`}>
+        Balance: {balance} {currencies[currency].id}
+      </div>
     </div>
   );
 }

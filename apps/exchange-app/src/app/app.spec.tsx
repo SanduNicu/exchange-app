@@ -172,8 +172,8 @@ describe('App', () => {
       changeInputValue,
     } = renderApp();
 
-    expect(fromBalance.innerHTML).toBe('Balance: 1000');
-    expect(toBalance.innerHTML).toBe('Balance: 1000');
+    expect(fromBalance.innerHTML).toBe('Balance: 1000 EUR');
+    expect(toBalance.innerHTML).toBe('Balance: 1000 USD');
 
     changeSelectValue('from', 'USD');
     changeSelectValue('to', 'GBP');

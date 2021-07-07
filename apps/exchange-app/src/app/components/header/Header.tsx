@@ -6,9 +6,7 @@ interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   const { currencyToSell } = props;
-  return (
-    <div data-testid="title">{`Sell ${currencies[currencyToSell].id}`}</div>
-  );
+  return <h2 data-testid="title">{`Sell ${currencies[currencyToSell].id}`}</h2>;
 }
 
 export default Header;
